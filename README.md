@@ -283,10 +283,6 @@ of the endpoints and of the countries on the way, and the number of shortest rou
 added a detour factor (walked distance divided by straight-line distance) because
 winding routes felt hardest when I tested them.
 
-**Other AI use.** The code, styling and this README were written together with Claude Code
-(Anthropic's coding assistant). Commits it helped with are marked `Co-Authored-By: Claude`
-in the Git history.
-
 ## 13. Credits
 
 Country boundaries: Natural Earth (public domain), via world-atlas by Mike Bostock (ISC).
