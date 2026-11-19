@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 640" font-family="'Comic Sans MS','Chalkboard SE','Segoe Print',cursive" font-size="13" fill="#0B2240">
+  <rect width="760" height="640" fill="#FBFBF8"/>
+  <g fill="none" stroke="#0B2240" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- phone 1: playing -->
+    <rect x="30" y="20" width="300" height="600" rx="34"/>
+    <path d="M30 84 H330"/>
+    <circle cx="58" cy="54" r="9" stroke="#E09B00"/>
+    <circle cx="96" cy="54" r="16" stroke="#E09B00" stroke-width="3"/>
+    <rect x="186" y="42" width="36" height="24" rx="4"/><rect x="228" y="42" width="30" height="24" rx="4"/>
+    <rect x="296" y="40" width="26" height="26" rx="7"/>
+    <path d="M60 180 q50 -30 100 0 t90 10 q20 60 -20 100 t-120 10 q-60 -40 -50 -120z" stroke="#9AA6B2"/>
+    <path d="M90 200 l30 -10 l20 20 l-10 30 l-30 0z" fill="#36D6C8"/>
+    <path d="M140 215 l40 -6 l10 30 l-30 20 l-20 -14z" fill="#FFB000"/>
+    <path d="M210 260 l30 0 l10 30 l-36 4z" fill="#FF4D79"/>
+    <path d="M110 220 L162 232" stroke="#E09B00" stroke-width="3"/>
+    <rect x="296" y="96" width="26" height="26" rx="7"/>
+    <!-- bottom sheet -->
+    <path d="M30 400 q0 -16 16 -16 h268 q16 0 16 16 v186 q0 34 -34 34 h-232 q-34 0 -34 -34z"/>
+    <rect x="46" y="398" width="110" height="18" rx="5"/>
+    <circle cx="78" cy="490" r="26" stroke="#0F7A55"/>
+    <rect x="114" y="466" width="50" height="48" rx="7" stroke="#5B3FA0"/>
+    <polygon points="196,464 216,464 230,478 230,500 216,514 196,514 182,500 182,478" stroke="#C0265A"/>
+    <rect x="46" y="560" width="128" height="34" rx="10"/><rect x="186" y="560" width="128" height="34" rx="10"/>
+
+    <!-- phone 2: passport -->
+    <rect x="430" y="20" width="300" height="600" rx="34"/>
+    <rect x="446" y="60" width="268" height="540" rx="18"/>
+    <rect x="462" y="160" width="236" height="120" rx="6"/>
+    <path d="M480 260 v-30 M500 260 v-50 M520 260 v-40 M540 260 v-60 M560 260 v-30" stroke="#E09B00" stroke-width="8"/>
+    <circle cx="490" cy="330" r="20" stroke="#0F7A55"/><rect x="520" y="310" width="40" height="40" rx="6" stroke="#5B3FA0"/><circle cx="600" cy="330" r="20" stroke="#C0265A"/><rect x="636" y="310" width="40" height="40" rx="6" stroke="#1D5FB8"/>
+    <rect x="462" y="520" width="110" height="34" rx="10"/><rect x="584" y="520" width="114" height="34" rx="10" fill="#FFB000" stroke="none"/>
+    <path d="M446 566 H714"/>
+  </g>
+  <text x="104" y="59" font-size="11" font-weight="bold">47</text>
+  <text x="190" y="58" font-size="10">4,800</text><text x="231" y="58" font-size="10">3/9</text>
+  <text x="50" y="140" font-size="11" fill="#586473">globe fills the screen</text>
+  <text x="50" y="410" font-size="10">Level 1</text>
+  <text x="48" y="440" font-weight="bold" font-size="15">Turkey  ->  Portugal</text>
+  <text x="66" y="494" font-size="8" fill="#0F7A55">TURKEY</text>
+  <text x="240" y="494" font-size="11" fill="#586473">stamps scroll</text>
+  <text x="48" y="546" font-size="11">In Serbia. Keep heading...</text>
+  <text x="90" y="582" font-size="12">Undo</text><text x="205" y="582" font-size="12">Skip (-1 life)</text>
+  <text x="50" y="372" font-size="11" fill="#586473">visa page as a bottom sheet</text>
+  <text x="462" y="100" font-size="11" fill="#C0265A">Time is up</text>
+  <text x="462" y="134" font-size="26" font-weight="bold">12,480 points</text>
+  <text x="462" y="152" font-size="10" fill="#586473">crossings vs shortest (Chart.js)</text>
+  <text x="462" y="300" font-size="10" fill="#586473">all stamps collected</text>
+  <text x="462" y="400" font-size="12">1. Dila     12,480</text>
+  <text x="462" y="420" font-size="12">2. Ali       9,310</text>
+  <text x="484" y="542" font-size="12">Main menu</text><text x="608" y="542" font-size="12">Play again</text>
+  <text x="452" y="586" font-size="9" fill="#586473">P&lt;OVLDILA&lt;&lt;OVERLAND&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</text>
+</svg>
