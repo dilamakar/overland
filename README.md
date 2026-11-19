@@ -245,11 +245,47 @@ Publishing on GitHub Pages: *Settings → Pages → Deploy from a branch → `ma
 
 ## 12. What I learned from AI
 
-> *To be completed by the author: describe what you learned from the AI conversation(s) and paste
-> the share URL(s) here, as required by the assignment.*
->
-> - Conversation URL: `…`
-> - What I learned: `…`
+**Conversation:** https://chatgpt.com/s/cx_6afee2712c348191979c8ab4373e68cf (ChatGPT, in Turkish)
+
+I used ChatGPT to think through the two hardest design questions before writing the
+game logic: how to get country neighbours out of a map, and how to make routes hard
+without making them unfair.
+
+**1. Neighbours come from the topology, not from geometry tests.**
+I first assumed I would have to intersect every pair of country polygons. ChatGPT pointed
+me to `topojson.neighbors()`: in TopoJSON, two countries that share a border literally share
+the same arc, so the neighbour list is a by-product of the data structure. This is a nice
+example of why topology matters in GIS: shared boundaries are stored once, so adjacency is
+free. It also explained the limits. `neighbors()` doesn't know how long a border is,
+generalisation at 1:50m can drop very short borders, and microstates and disputed areas
+depend on how the data source defines them.
+
+**2. Overseas territories are a rule decision, not a bug.**
+French Guiana is part of France in Natural Earth, so France appears to border Brazil and
+Suriname. The advice was to choose a rule on purpose and write it down: either only direct
+land borders between the main bodies of states count, or overseas territories count too.
+I chose the first rule for a game called *Overland*, removed the France–Brazil and
+France–Suriname links, and documented this (and the Kaliningrad exclave case) in §9.
+
+**3. Countries are a graph, and the shortest route is a breadth-first search.**
+With countries as nodes and land borders as edges, every crossing costs the same, so BFS
+gives the route with the fewest crossings. ChatGPT also suggested precomputing the graph so
+it runs instantly in the browser. I went one step further and run BFS from every country
+at start-up, which also counts how many different shortest routes exist.
+
+**4. "Shortest" and "hardest" are not the same thing.**
+This was the most useful idea. BFS tells you how long a route has to be; difficulty is
+about how hard it is for a person to find. The criteria suggested were: route length, how
+few alternative shortest routes there are, how small or unfamiliar the countries are, and
+how many choices the player faces at each step. Each one is scaled and combined into a
+weighted score, with the weights tuned by playing. My score in §3 uses length, smallness
+of the endpoints and of the countries on the way, and the number of shortest routes. I
+added a detour factor (walked distance divided by straight-line distance) because
+winding routes felt hardest when I tested them.
+
+**Other AI use.** The code, styling and this README were written together with Claude Code
+(Anthropic's coding assistant). Commits it helped with are marked `Co-Authored-By: Claude`
+in the Git history.
 
 ## 13. Credits
 
