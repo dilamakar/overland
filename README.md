@@ -2,7 +2,9 @@
 
 **GMT 458 Web GIS, Assignment 2 (GeoGame)**
 
-> Live demo: `https://<github-username>.github.io/<repo-name>/` *(GitHub Pages link goes here)*
+> **Play it:** https://dilamakar.github.io/overland/
+>
+> Repository: https://github.com/dilamakar/overland
 
 Overland gives you two countries and one minute. Get from the first to the second by
 **crossing land borders only**: every country you step into must share a land border with
