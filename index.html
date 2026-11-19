@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0B2240">
+  <meta name="description" content="Overland: a one-minute GeoGame. Get from one country to another by crossing land borders only.">
+  <title>Overland: cross borders, not seas</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%23FFB000' stroke-width='3'/%3E%3Cpath d='M9 19 L14 12 L18 17 L23 10' fill='none' stroke='%23FFB000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <script>
+    // Apply the saved theme before first paint (no flash of the wrong theme).
+    try {
+      var th = localStorage.getItem('overland.theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'day' : 'night');
+      document.documentElement.dataset.theme = th;
+    } catch (e) { /* storage blocked */ }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-mode="menu">
+  <canvas id="globe" class="globe" data-i18n-aria-label="globe.label"></canvas>
+
+  <!-- ================= Preferences: theme + language ================= -->
+  <div class="prefs" id="prefs">
+    <button class="icon-btn" id="theme-btn" type="button">
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+    </button>
+    <button class="icon-btn icon-btn--text" id="lang-btn" type="button" data-i18n-aria-label="pref.lang" data-i18n-title="pref.lang">TR</button>
+  </div>
+
+  <!-- ================= HUD ================= -->
+  <header class="hud" id="hud" hidden>
+    <div class="brand" aria-hidden="true">
+      <svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="M9 19 L14 12 L18 17 L23 10"/></svg>
+      <span>Overland</span>
+    </div>
+
+    <div class="clock" id="clock-wrap" role="timer" data-i18n-aria-label="hud.time">
+      <span class="clock__num" id="clock">60</span>
+      <svg class="clock__ring" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="19" class="clock__track"/>
+        <circle cx="22" cy="22" r="19" class="clock__fill" id="clock-fill"/>
+      </svg>
+    </div>
+
+    <dl class="stats">
+      <div><dt data-i18n="hud.score">Score</dt><dd id="score">0</dd></div>
+      <div><dt data-i18n="hud.route">Route</dt><dd><span id="route-n">1</span><small>/9</small></dd></div>
+      <div><dt data-i18n="hud.lives">Lives</dt><dd class="lives" id="lives"></dd></div>
+    </dl>
+    <span class="hud__prefs-slot" aria-hidden="true"></span>
+    <button class="icon-btn" id="pause-btn" data-i18n-aria-label="hud.pause" data-i18n-title="hud.pause">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="3.5" height="14" rx="1"/><rect x="14" y="5" width="3.5" height="14" rx="1"/></svg>
+    </button>
+  </header>
+
+  <!-- ================= Visa page (route panel) ================= -->
+  <aside class="visa" id="visa" hidden>
+    <div class="visa__head">
+      <span class="chip" id="level-chip" data-level="1"></span>
+      <span class="visa__hint" id="optimal-hint"></span>
+    </div>
+
+    <div class="leg">
+      <div class="leg__end leg__end--from">
+        <span class="leg__label" data-i18n="visa.from">From</span>
+        <span class="leg__name" id="from-name"></span>
+      </div>
+      <svg class="leg__arrow" viewBox="0 0 40 16" aria-hidden="true"><path d="M2 8 H34 M28 2 L36 8 L28 14"/></svg>
+      <div class="leg__end leg__end--to">
+        <span class="leg__label" data-i18n="visa.to">To</span>
+        <span class="leg__name" id="to-name"></span>
+      </div>
+    </div>
+
+    <ol class="stamps" id="stamps" data-i18n-data-empty="visa.empty"></ol>
+
+    <p class="status" id="status" aria-live="polite"></p>
+
+    <div class="visa__actions">
+      <button class="btn btn--quiet" id="undo-btn" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 L4 12 L9 17 M4 12 H15 a5 5 0 0 1 0 10 h-2"/></svg>
+        <span data-i18n="visa.undo">Undo</span>
+      </button>
+      <button class="btn btn--quiet" id="skip-btn"><span data-i18n="visa.skip">Skip route</span> <span class="cost" data-i18n="visa.cost">−1 life</span></button>
+    </div>
+  </aside>
+
+  <!-- Globe controls -->
+  <div class="globe-ctrl" id="globe-ctrl" hidden>
+    <button class="icon-btn" id="zoom-in" data-i18n-aria-label="ctrl.in" data-i18n-title="ctrl.in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="icon-btn" id="zoom-out" data-i18n-aria-label="ctrl.out" data-i18n-title="ctrl.out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+    <button class="icon-btn" id="recenter" data-i18n-aria-label="ctrl.fit" data-i18n-title="ctrl.fit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
+  </div>
+
+  <!-- Arrival card -->
+  <div class="arrival" id="arrival" role="status" hidden>
+    <p class="arrival__kicker" id="arr-kicker"></p>
+    <p class="arrival__title" id="arr-title"></p>
+    <ul class="arrival__lines" id="arr-lines"></ul>
+    <button class="btn btn--amber" id="next-btn"></button>
+  </div>
+
+  <!-- ================= Start screen ================= -->
+  <section class="screen screen--start" id="screen-start" aria-labelledby="title">
+    <div class="intro">
+      <h1 id="title">Overland</h1>
+      <p class="intro__tag" data-i18n="start.tag">Cross borders, not seas.</p>
+      <p class="intro__lede" data-i18n="start.lede"></p>
+
+      <div class="sample" id="sample" aria-hidden="true"></div>
+
+      <ol class="steps">
+        <li><span data-i18n-html="start.step1"></span></li>
+        <li><span data-i18n-html="start.step2"></span></li>
+        <li><span data-i18n-html="start.step3"></span></li>
+      </ol>
+
+      <form class="intro__go" id="start-form">
+        <input class="input" id="player-name" maxlength="16" data-i18n-placeholder="start.name" data-i18n-aria-label="start.name" autocomplete="nickname">
+        <button class="btn btn--amber btn--lg" id="start-btn" type="submit" disabled>Loading map…</button>
+      </form>
+
+      <details class="board">
+        <summary data-i18n="start.board">High scores on this device</summary>
+        <ol class="board__list" id="board-start" data-i18n-data-empty="board.empty"></ol>
+      </details>
+      <p class="credit" data-i18n="start.credit"></p>
+    </div>
+  </section>
+
+  <!-- ================= Pause ================= -->
+  <section class="screen screen--dim" id="screen-pause" hidden aria-labelledby="pause-title">
+    <div class="sheet sheet--small">
+      <h2 id="pause-title" data-i18n="pause.title">Paused</h2>
+      <p data-i18n="pause.text"></p>
+      <button class="btn btn--amber btn--lg" id="resume-btn" data-i18n="pause.resume">Resume</button>
+    </div>
+  </section>
+
+  <!-- ================= Game over: the passport ================= -->
+  <section class="screen screen--dim" id="screen-over" hidden aria-labelledby="over-title">
+    <div class="passport">
+      <div class="passport__top">
+        <div>
+          <p class="passport__reason" id="over-reason"></p>
+          <h2 id="over-title"><span id="over-score">0</span> <span data-i18n="over.points">points</span></h2>
+          <p class="passport__sub" id="over-sub"></p>
+        </div>
+        <span class="passport__rank" id="over-rank"></span>
+      </div>
+
+      <div class="passport__grid">
+        <figure class="passport__fig">
+          <figcaption data-i18n="over.chart">Your crossings vs. the shortest route</figcaption>
+          <div class="passport__chart"><canvas id="chart"></canvas></div>
+        </figure>
+        <figure class="passport__fig">
+          <figcaption id="visited-caption"></figcaption>
+          <ol class="stamps stamps--book" id="stamps-all"></ol>
+        </figure>
+      </div>
+
+      <div class="passport__foot">
+        <ol class="board__list" id="board-over" data-i18n-data-empty="board.empty"></ol>
+        <div class="passport__actions">
+          <button class="btn btn--quiet-dark" id="menu-btn" data-i18n="over.menu">Main menu</button>
+          <button class="btn btn--amber btn--lg" id="again-btn" data-i18n="over.again">Play again</button>
+        </div>
+      </div>
+      <p class="mrz" id="mrz" aria-hidden="true"></p>
+    </div>
+  </section>
+
+  <!-- Libraries (exact versions) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
